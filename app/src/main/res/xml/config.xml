@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.nowui.daning" version="0.0.1">
+<preference name="loglevel" value="DEBUG" />
+
+        <allow-navigation href="*" />
+
+        <!-- The above is equivalent to these three declarations -->
+        <allow-navigation href="http://*/*" />
+        <allow-navigation href="https://*/*" />
+        <allow-navigation href="data:*" />
+
+        <feature name="webviewplus">
+                <param name="android-package" value="com.nowui.daning.category.BaseCordovaPlugin"/>
+                <param name="onload" value="true"/>
+        </feature>
+        <feature name="ZxfPlugin">
+                <param name="android-package" value="com.zxf.plugin.ZxfPlugin" />
+                <param name="onload" value="true" />
+        </feature>
+
+</widget>

@@ -1,0 +1,53 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
+
+    defaultConfig {
+        applicationId "com.nowui.daning"
+        minSdkVersion 15
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main {
+            assets.srcDirs = ['src/main/assets', 'src/main/assets/']
+        }
+    }
+    productFlavors {
+        armv7 {
+            ndk {
+                abiFilters "armeabi-v7a", ""
+            }
+        }
+        x86 {
+            ndk {
+                abiFilters "x86", ""
+            }
+        }
+    }
+}
+
+repositories {
+    maven {
+        url 'https://download.01.org/crosswalk/releases/crosswalk/android/maven2'
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
+    compile 'com.alibaba:fastjson:1.2.7'
+    compile 'com.android.support:appcompat-v7:22.2.1'
+    compile files('libs/jpush-sdk-release1.8.2.jar')
+    compile project(':pullToRefresh')
+}
