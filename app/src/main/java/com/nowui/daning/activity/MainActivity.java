@@ -17,7 +17,7 @@ public class MainActivity extends BaseActivity {
 
         String appUserId = setting.getString(Helper.KeyAppUserId, "");
         if(Helper.isNullOrEmpty(appUserId)) {
-            String initDataString = "{\"type\": \"OnePage\", \"data\": {\"url\": \"https://m.baidu.com/?from=844b&vit=fps\", \"header\": {\"center\": {\"data\": \"\"} } } }";
+            String initDataString = "{\"type\": \"OnePage\", \"data\": {\"url\": \"/login.html\", \"header\": {\"center\": {\"data\": \"\"} } } }";
             Intent intent = new Intent();
             intent.putExtra(Helper.KeyInitData, initDataString);
             intent.putExtra(Helper.KeyIsRoot, true);

@@ -24,6 +24,7 @@ import com.nowui.daning.utility.Helper;
 import com.nowui.daning.view.BrowerView;
 import com.nowui.daning.view.FooterView;
 import com.nowui.daning.view.HeaderView;
+import com.nowui.daning.view.TabView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ public class BrowerActivity extends BaseActivity {
     private RelativeLayout mainRelativeLayout;
     private HeaderView headerView;
     private BaseViewPager viewPager;
+    private TabView tabView;
     private FooterView footerView;
     private List<View> browerViewList = new ArrayList<View>();
     private List<Boolean> browerViewIsLoadList = new ArrayList<Boolean>();
@@ -118,8 +120,16 @@ public class BrowerActivity extends BaseActivity {
 
                 mainRelativeLayout.addView(browerView, browerViewLayoutParams);
             } else if(pageTypeString.equals(PageType.MultiTab.toString())) {
+                List<Map<String, Object>> headerItemList = new ArrayList<Map<String, Object>>();
+                headerItemList.add(initDataDataMap);
 
+                initHeaderView(headerItemList);
 
+                List<Map<String, Object>> tabItemList = (List<Map<String, Object>>) initDataDataMap.get(Helper.KeyTab);
+
+                initTabView(tabItemList);
+
+                initMainView(tabItemList);
             } else if(pageTypeString.equals(PageType.MultiFooter.toString())) {
                 List<Map<String, Object>> itemList = (List<Map<String, Object>>) initDataDataMap.get(Helper.KeyFooter);
 
@@ -140,15 +150,15 @@ public class BrowerActivity extends BaseActivity {
         }
 
         final RelativeLayout splashViewRelativeLayout = new RelativeLayout(this);
-        splashViewRelativeLayout.setBackgroundColor(getResources().getColor(R.color.background_color));
+        splashViewRelativeLayout.setBackgroundColor(getResources().getColor(R.color.splash_background_color));
         RelativeLayout.LayoutParams splashViewRelativeLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         mainRelativeLayout.addView(splashViewRelativeLayout, splashViewRelativeLayoutParams);
 
         ImageView imageView = new ImageView(this);
         imageView.setImageDrawable(getResources().getDrawable(R.drawable.logo));
         RelativeLayout.LayoutParams imageViewLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        imageViewLayoutParams.width = 700;
-        imageViewLayoutParams.height = 700;
+        imageViewLayoutParams.width = Helper.formatPix(this, 400);
+        imageViewLayoutParams.height = Helper.formatPix(this, 379);
         imageViewLayoutParams.addRule(RelativeLayout.CENTER_VERTICAL);
         imageViewLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
         splashViewRelativeLayout.addView(imageView, imageViewLayoutParams);
@@ -194,53 +204,6 @@ public class BrowerActivity extends BaseActivity {
         mainRelativeLayout.addView(headerView, headerViewLayoutParams);
     }
 
-    private void initMainView(List<Map<String, Object>> itemList) {
-        for(int i = 0; i < itemList.size(); i++) {
-            Map<String, Object> map = itemList.get(i);
-
-            BrowerView browerView = new BrowerView(this);
-            browerView.setIsFinish(isFinish);
-            if(i == 0) {
-                browerView.loadUrl(map.get(Helper.KeyUrl).toString());
-                browerViewIsLoadList.add(true);
-            } else {
-                browerViewIsLoadList.add(false);
-            }
-            browerViewList.add(browerView);
-        }
-
-        BasePagerAdapter viewPagerAdapter = new BasePagerAdapter(browerViewList);
-
-        viewPager = new BaseViewPager(this);
-        viewPager.setOffscreenPageLimit(itemList.size() - 1);
-        viewPager.setAdapter(viewPagerAdapter);
-        viewPager.setCurrentItem(0, false);
-        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                footerView.checkItem(position);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-
-        });
-
-        RelativeLayout.LayoutParams viewPagerLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-        viewPagerLayoutParams.addRule(RelativeLayout.BELOW, headerView.getId());
-        viewPagerLayoutParams.addRule(RelativeLayout.ABOVE, footerView.getId());
-
-        mainRelativeLayout.addView(viewPager, viewPagerLayoutParams);
-    }
-
     /*private void initHorizontalScrollView(List<Map<String, Object>> itemList) {
         horizontalScrollView = new HorizontalScrollView(this);
         horizontalScrollView.setHorizontalScrollBarEnabled(false);
@@ -273,10 +236,43 @@ public class BrowerActivity extends BaseActivity {
         mainRelativeLayout.addView(horizontalScrollView, horizontalScrollViewParams);
     }*/
 
+    private void initTabView(List<Map<String, Object>> itemList) {
+        tabView = new TabView(this);
+        //noinspection ResourceType
+        tabView.setId(2);
+        tabView.setOnClickTabListener(new TabView.OnClickTabListener() {
+            @Override
+            public void OnClick(int position) {
+                viewPager.setCurrentItem(position, false);
+
+                Boolean isLoad = browerViewIsLoadList.get(position);
+                if (!isLoad) {
+                    browerViewIsLoadList.set(position, true);
+
+                    System.out.println("setOnClickFooterListener:" + position);
+
+                    String initDataString = getIntent().getStringExtra(Helper.KeyInitData);
+                    Map<String, Object> initDataMap = JSON.parseObject(initDataString);
+                    Map<String, Object> initDataDataMap = (Map<String, Object>) initDataMap.get(Helper.KeyData);
+                    List<Map<String, Object>> itemList = (List<Map<String, Object>>) initDataDataMap.get(Helper.KeyTab);
+                    Map<String, Object> map = itemList.get(position);
+                    ((BrowerView) browerViewList.get(position)).loadUrl(map.get(Helper.KeyUrl).toString());
+                }
+            }
+        });
+
+        RelativeLayout.LayoutParams tabViewLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        tabViewLayoutParams.addRule(RelativeLayout.BELOW, headerView.getId());
+
+        tabView.initItem(itemList);
+
+        mainRelativeLayout.addView(tabView, tabViewLayoutParams);
+    }
+
     private void initFooterView(List<Map<String, Object>> itemList) {
         footerView = new FooterView(this);
         //noinspection ResourceType
-        footerView.setId(3);
+        footerView.setId(4);
         footerView.setOnClickFooterListener(new FooterView.OnClickFooterListener() {
             @Override
             public void OnClick(int position) {
@@ -285,7 +281,7 @@ public class BrowerActivity extends BaseActivity {
                 viewPager.setCurrentItem(position, false);
 
                 Boolean isLoad = browerViewIsLoadList.get(position);
-                if (! isLoad) {
+                if (!isLoad) {
                     browerViewIsLoadList.set(position, true);
 
                     System.out.println("setOnClickFooterListener:" + position);
@@ -308,6 +304,65 @@ public class BrowerActivity extends BaseActivity {
         mainRelativeLayout.addView(footerView, footerViewLayoutParams);
     }
 
+    private void initMainView(List<Map<String, Object>> itemList) {
+        for(int i = 0; i < itemList.size(); i++) {
+            Map<String, Object> map = itemList.get(i);
+
+            BrowerView browerView = new BrowerView(this);
+            browerView.setIsFinish(isFinish);
+            if(i == 0) {
+                browerView.loadUrl(map.get(Helper.KeyUrl).toString());
+                browerViewIsLoadList.add(true);
+            } else {
+                browerViewIsLoadList.add(false);
+            }
+            browerViewList.add(browerView);
+        }
+
+        BasePagerAdapter viewPagerAdapter = new BasePagerAdapter(browerViewList);
+
+        viewPager = new BaseViewPager(this);
+        viewPager.setOffscreenPageLimit(itemList.size() - 1);
+        viewPager.setAdapter(viewPagerAdapter);
+        viewPager.setCurrentItem(0, false);
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (Helper.isNullOrEmpty(tabView)) {
+                    footerView.checkItem(position);
+                } else {
+                    tabView.checkItem(position);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+
+        });
+
+        if (! Helper.isNullOrEmpty(tabView)) {
+            viewPager.setScroll(true);
+        }
+
+        RelativeLayout.LayoutParams viewPagerLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        if (Helper.isNullOrEmpty(tabView)) {
+            viewPagerLayoutParams.addRule(RelativeLayout.BELOW, headerView.getId());
+            viewPagerLayoutParams.addRule(RelativeLayout.ABOVE, footerView.getId());
+        } else {
+            viewPagerLayoutParams.addRule(RelativeLayout.BELOW, tabView.getId());
+        }
+
+        mainRelativeLayout.addView(viewPager, viewPagerLayoutParams);
+    }
+
     private void finishActivity() {
         finish();
 
@@ -328,7 +383,7 @@ public class BrowerActivity extends BaseActivity {
                     ((BrowerView) view).onActivityResult(requestCode, resultCode, data);
                 }
             }
-        } else if(pageTypeString.equals(PageType.MultiFooter.toString())) {
+        } else if(pageTypeString.equals(PageType.MultiFooter.toString()) || pageTypeString.equals(PageType.MultiTab.toString())) {
             ((BrowerView) browerViewList.get(viewPager.getCurrentItem())).onActivityResult(requestCode, resultCode, data);
         }
     }

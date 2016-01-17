@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class Helper {
 
-    public static final String WebUrl = "http://daning-app.nowui.com";
+    public static final String WebUrl = "http://run.nowui.com";
     //public static final String WebUrl = "http://192.168.200.2:8088";
 
     //Key
@@ -34,6 +34,7 @@ public class Helper {
     public static final String KeyInitData = "initData";
     public static final String KeyType = "type";
     public static final String KeyData = "data";
+    public static final String KeyTitle = "title";
     public static final String KeyIcon = "icon";
     public static final String KeyHeader = "header";
     public static final String KeyCenter = "center";
@@ -52,6 +53,8 @@ public class Helper {
     public static final String KeyAppDepartmentName = "departmentName";
     public static final String KeyIsFinish = "isFinish";
     public static final String KeyAction = "action";
+    public static final String KeyPosition = "position";
+    public static final String KeyList = "list";
     public static final String KeyPushFilter = "pushFilter";
 
     //Event
@@ -73,12 +76,15 @@ public class Helper {
     public static final String ActionSetTitle = "setTitle";
     public static final String ActionSetSetting = "setSetting";
     public static final String ActionGetSetting = "getSetting";
-    public static final String ActionSetGo = "setGo";
+    public static final String ActionSetSwitch = "setSwitch";
+    public static final String ActionSetNavite = "setNavite";
     public static final String ActionSetBack = "setBack";
     public static final String ActionSetBackAndRefresh = "setBackAndRefresh";
     public static final String ActionSetClickHeaderRightButton = "setClickHeaderRightButton";
+    public static final String ActionSetPreviewImage = "setPreviewImage";
     public static final String ActionGetStart = "getStart";
     public static final String ActionGetPush = "getPush";
+    public static final String ActionGetAlert = "getAlert";
 
     //Code
     public static final int CodeRequest = 0;
@@ -120,6 +126,12 @@ public class Helper {
             return empty;
         }
         return false;
+    }
+
+    public static int formatPix(Context context, float pixValue) {
+        int width = 640;
+
+        return (int) Math.round(getScreenWidth(context) * 1.0 / width * pixValue);
     }
 
     public static String formatDateTime() {

@@ -8,7 +8,7 @@ import android.view.View;
 
 public class BaseViewPager extends ViewPager {
 
-    private boolean isScroll = false;
+    public boolean isScroll = false;
 
     public BaseViewPager(Context context) {
         super(context);

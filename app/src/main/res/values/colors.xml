@@ -2,10 +2,11 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#a7a6ab</color>
 
     <color name="text_color">#000000</color>
-    <color name="background_color">#ffffff</color>
+    <color name="background_color">#f6f5f3</color>
+    <color name="splash_background_color">#ffffff</color>
     <color name="title_text_color">#ffffff</color>
     <color name="title_background_color">#2e303f</color>
     <color name="footer_line_color">#a7a6ab</color>

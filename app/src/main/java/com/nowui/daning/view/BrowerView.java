@@ -2,9 +2,10 @@ package com.nowui.daning.view;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -15,6 +16,7 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 
 import com.alibaba.fastjson.JSON;
@@ -26,7 +28,9 @@ import com.nowui.daning.activity.BaseActivity;
 import com.nowui.daning.activity.BrowerActivity;
 import com.nowui.daning.utility.Helper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class BrowerView extends RelativeLayout {
@@ -57,6 +61,16 @@ public class BrowerView extends RelativeLayout {
 
     public void setOnBackAndRefreshListener(OnBackAndRefreshListener listener) {
         onBackAndRefreshListener = listener;
+    }
+
+    private OnPreviewImageListener onPreviewImageListener;
+
+    public interface OnPreviewImageListener {
+        public void OnDid(Map<String, Object> payloadMap);
+    }
+
+    public void setOnPreviewImageListener(OnPreviewImageListener listener) {
+        onPreviewImageListener = listener;
     }
 
     public BrowerView(Context context) {
@@ -100,7 +114,7 @@ public class BrowerView extends RelativeLayout {
         });
 
         webView = pullRefreshWebView.getRefreshableView();
-        webView.setVerticalScrollBarEnabled(false);
+        webView.setVerticalScrollBarEnabled(true);
         webView.setHorizontalScrollBarEnabled(false);
         webView.setWebViewClient(new BaseWebViewClient());
 
@@ -210,7 +224,8 @@ public class BrowerView extends RelativeLayout {
 
         @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-            return Helper.checkLoaclFile(myContent, url);
+            //return Helper.checkLoaclFile(myContent, url);
+            return null;
         }
 
         @Override
@@ -221,6 +236,8 @@ public class BrowerView extends RelativeLayout {
                 Map<String, Object> jsonMap = JSON.parseObject(Helper.decode(url.replace(Helper.WebviewplusHeader, "")), new TypeReference<Map<String, Object>>() {
 
                 });
+
+                System.out.println(jsonMap);
 
                 String action = jsonMap.get(Helper.KeyAction).toString();
                 Map<String, Object> payloadMap = (Map<String, Object>) jsonMap.get(Helper.KeyData);
@@ -251,7 +268,7 @@ public class BrowerView extends RelativeLayout {
                     }
 
                     ((BaseActivity) myContent).editor.commit();
-                } else if(action.equals(Helper.ActionSetGo)) {
+                } else if(action.equals(Helper.ActionSetSwitch)) {
                     boolean isRoot = false;
                     boolean isSplash = false;
                     boolean isDoubleClickBack = false;
@@ -290,6 +307,40 @@ public class BrowerView extends RelativeLayout {
                     if (onBackAndRefreshListener != null) {
                         onBackAndRefreshListener.OnDid(payloadMap);
                     }
+                } else if(action.equals(Helper.ActionSetPreviewImage)) {
+                    if (onPreviewImageListener != null) {
+                        onPreviewImageListener.OnDid(payloadMap);
+                    }
+
+                    List<String> list = (List<String>) payloadMap.get(Helper.KeyList);
+
+                    ArrayList<String> array = new ArrayList<String>();
+
+                    for (String s : list) {
+                        array.add(s);
+                    }
+
+                } else if(action.equals(Helper.ActionSetNavite)) {
+                    String initDataString = payloadMap.get(Helper.KeyData).toString();
+
+                    Intent intent = new Intent();
+                    intent.putExtra(Helper.KeyInitData, initDataString);
+                    intent.setClass(myContent, BrowerActivity.class);
+                    ((Activity) myContent).startActivityForResult(intent, Helper.CodeRequest);
+
+                    ((Activity) myContent).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                } else if(action.equals(Helper.ActionGetAlert)) {
+                    AlertDialog.Builder builder = new  AlertDialog.Builder(myContent);
+                    builder.setTitle(payloadMap.get(Helper.KeyTitle).toString());
+                    builder.setView(new EditText(myContent));
+                    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            
+                        }
+                    });
+                    builder.setNegativeButton("取消", null);
+                    builder.show();
                 }
 
                 return true;
