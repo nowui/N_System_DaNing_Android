@@ -164,6 +164,19 @@ public class BrowerView extends RelativeLayout {
         isFinish = result;
     }
 
+    public  Map<Object, Object> getUserMap() {
+        String appUserId = ((BaseActivity)myContent).setting.getString(Helper.KeyAppUserId, "");
+        String appUserName = ((BaseActivity)myContent).setting.getString(Helper.KeyAppUserName, "");
+        String jpushRegistrationId = ((BaseActivity)myContent).setting.getString(Helper.KeyJpushRegistrationId, "");
+
+        Map<Object, Object> map = new HashMap<Object, Object>();
+        map.put(Helper.KeyAppUserId, appUserId);
+        map.put(Helper.KeyAppUserName, appUserName);
+        map.put(Helper.KeyJpushRegistrationId, jpushRegistrationId);
+
+        return map;
+    }
+
     public void onStart() {
         System.out.println("onStart:" + urlString);
 
@@ -177,6 +190,11 @@ public class BrowerView extends RelativeLayout {
 
     public void onResume() {
         System.out.println("onResume:" + urlString);
+
+        Map<Object, Object> map = getUserMap();
+
+        System.out.println("javascript:" + Helper.ActionGetAppear + "(" + JSON.toJSONString(map) + ")");
+        webView.loadUrl("javascript:" + Helper.ActionGetAppear + "(" + JSON.toJSONString(map) + ")");
 
         webView.onResume();
     }
@@ -224,8 +242,7 @@ public class BrowerView extends RelativeLayout {
 
         @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-            //return Helper.checkLoaclFile(myContent, url);
-            return null;
+            return Helper.checkLoaclFile(myContent, url);
         }
 
         @Override
@@ -247,14 +264,7 @@ public class BrowerView extends RelativeLayout {
                         onInitTitleListener.OnDid(payloadMap);
                     }
                 } else if(action.equals(Helper.ActionGetSetting)) {
-                    String appUserId = ((BaseActivity)myContent).setting.getString(Helper.KeyAppUserId, "");
-                    String appUserName = ((BaseActivity)myContent).setting.getString(Helper.KeyAppUserName, "");
-                    String jpushRegistrationId = ((BaseActivity)myContent).setting.getString(Helper.KeyJpushRegistrationId, "");
-
-                    Map<Object, Object> map = new HashMap<Object, Object>();
-                    map.put(Helper.KeyAppUserId, appUserId);
-                    map.put(Helper.KeyAppUserName, appUserName);
-                    map.put(Helper.KeyJpushRegistrationId, jpushRegistrationId);
+                    Map<Object, Object> map = getUserMap();
 
                     System.out.println("javascript:" + Helper.ActionGetSetting + "(" + JSON.toJSONString(map) + ")");
                     webView.loadUrl("javascript:" + Helper.ActionGetSetting + "(" + JSON.toJSONString(map) + ")");
@@ -330,13 +340,19 @@ public class BrowerView extends RelativeLayout {
 
                     ((Activity) myContent).overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 } else if(action.equals(Helper.ActionGetAlert)) {
+                    final EditText editText = new EditText(myContent);
+
                     AlertDialog.Builder builder = new  AlertDialog.Builder(myContent);
                     builder.setTitle(payloadMap.get(Helper.KeyTitle).toString());
-                    builder.setView(new EditText(myContent));
+                    builder.setView(editText);
                     builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            
+                            Map<Object, Object> map = new HashMap<Object, Object>();
+                            map.put(Helper.KeyData, editText.getText());
+
+                            System.out.println("javascript:" + Helper.ActionGetAlert + "(" + JSON.toJSONString(map) + ")");
+                            webView.loadUrl("javascript:" + Helper.ActionGetAlert + "(" + JSON.toJSONString(map) + ")");
                         }
                     });
                     builder.setNegativeButton("取消", null);

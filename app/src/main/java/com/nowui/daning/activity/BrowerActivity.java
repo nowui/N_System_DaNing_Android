@@ -271,7 +271,6 @@ public class BrowerActivity extends BaseActivity {
 
     private void initFooterView(List<Map<String, Object>> itemList) {
         footerView = new FooterView(this);
-        //noinspection ResourceType
         footerView.setId(4);
         footerView.setOnClickFooterListener(new FooterView.OnClickFooterListener() {
             @Override

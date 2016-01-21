@@ -12,4 +12,6 @@
     <color name="footer_line_color">#a7a6ab</color>
     <color name="footer_text_select_color">#fba304</color>
     <color name="footer_text_unselect_color">#2e303f</color>
+    <color name="tab_text_select_color">#2e303f</color>
+    <color name="tab_text_unselect_color">#ffffff</color>
 </resources>

@@ -84,7 +84,11 @@ public class Helper {
     public static final String ActionSetPreviewImage = "setPreviewImage";
     public static final String ActionGetStart = "getStart";
     public static final String ActionGetPush = "getPush";
+    public static final String ActionGetAppear = "getAppear";
     public static final String ActionGetAlert = "getAlert";
+
+    public static final int TabWidth = 240;
+    public static final int TabHeight = 44;
 
     //Code
     public static final int CodeRequest = 0;

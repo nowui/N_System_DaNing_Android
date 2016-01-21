@@ -64,12 +64,13 @@ public class TabView extends RelativeLayout {
     }
 
     public void initItem(List<Map<String, Object>> itemList) {
-        int width = Helper.getScreenWidth(myContext) / itemList.size();
+        int tabWidth = Helper.formatPix(myContext, Helper.TabWidth * 2);
+        int width = tabWidth / itemList.size();
 
         for(int i = 0; i < itemList.size(); i++) {
             Map<String, Object> map = itemList.get(i);
 
-            TabItemView tabItemView = new TabItemView(myContext);
+            TabItemView tabItemView = new TabItemView(myContext, itemList.size(), i);
             tabItemView.setTag(i);
             tabItemView.setOnClickTabItemListener(new TabItemView.OnClickTabItemListener() {
                 @Override
@@ -85,7 +86,8 @@ public class TabView extends RelativeLayout {
             tabItemView.textView.setText(Helper.decode((map.get(Helper.KeyText).toString())));
 
             RelativeLayout.LayoutParams tabItemViewLayoutParams = new RelativeLayout.LayoutParams(width, RelativeLayout.LayoutParams.WRAP_CONTENT);
-            tabItemViewLayoutParams.leftMargin = width * i;
+            tabItemViewLayoutParams.leftMargin = (Helper.getScreenWidth(myContext) - tabWidth) / 2 + width * i;
+            tabItemViewLayoutParams.addRule(RelativeLayout.CENTER_VERTICAL);
 
             this.addView(tabItemView, tabItemViewLayoutParams);
         }
@@ -101,11 +103,11 @@ public class TabView extends RelativeLayout {
         for(int i = 0; i < this.getChildCount(); i++) {
             View view = this.getChildAt(i);
 
-            if(view instanceof FooterItemView) {
+            if(view instanceof TabItemView) {
                 if((int) view.getTag() == selectInt) {
-                    ((FooterItemView) view).didActive();
+                    ((TabItemView) view).didActive();
                 } else {
-                    ((FooterItemView) view).didNormal();
+                    ((TabItemView) view).didNormal();
                 }
             }
         }

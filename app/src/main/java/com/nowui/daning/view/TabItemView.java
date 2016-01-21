@@ -12,8 +12,11 @@ import com.nowui.daning.R;
 
 public class TabItemView extends RelativeLayout {
 
+    private RelativeLayout mainRelativeLayout;
     private Button button;
     public TextView textView;
+    private int total;
+    private int position;
 
     private OnClickTabItemListener onClickTabItemListener;
 
@@ -25,8 +28,11 @@ public class TabItemView extends RelativeLayout {
         onClickTabItemListener = listener;
     }
 
-    public TabItemView(Context context) {
+    public TabItemView(Context context, int total, int position) {
         super(context);
+
+        this.total = total;
+        this.position = position;
 
         initView(context);
     }
@@ -50,6 +56,8 @@ public class TabItemView extends RelativeLayout {
     private void initView(Context context) {
         View.inflate(context, R.layout.view_tab_item, this);
 
+        mainRelativeLayout = (RelativeLayout) findViewById(R.id.mainRelativeLayout);
+
         button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new OnClickListener() {
             @Override
@@ -61,14 +69,32 @@ public class TabItemView extends RelativeLayout {
         });
 
         textView = (TextView) findViewById(R.id.textView);
+
+        didNormal();
     }
 
     public void didNormal() {
-        textView.setTextColor(getResources().getColor(R.color.footer_text_unselect_color));
+        if (position == 0) {
+            mainRelativeLayout.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_tab_item_left));
+        } else if (position + 1 == total) {
+            mainRelativeLayout.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_tab_item_right));
+        } else {
+            //mainRelativeLayout.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_tab_item_center));
+        }
+
+        textView.setTextColor(getResources().getColor(R.color.tab_text_unselect_color));
     }
 
     public void didActive() {
-        textView.setTextColor(getResources().getColor(R.color.footer_text_select_color));
+        if (position == 0) {
+            mainRelativeLayout.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_tab_item_left_active));
+        } else if (position + 1 == total) {
+            mainRelativeLayout.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_tab_item_right_active));
+        } else {
+            //mainRelativeLayout.setBackgroundDrawable(getResources().getDrawable(R.drawable.shape_tab_item_center));
+        }
+
+        textView.setTextColor(getResources().getColor(R.color.tab_text_select_color));
     }
 
 }

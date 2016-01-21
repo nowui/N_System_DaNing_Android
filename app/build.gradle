@@ -22,7 +22,7 @@ android {
             assets.srcDirs = ['src/main/assets', 'src/main/assets/']
         }
     }
-    productFlavors {
+    /*productFlavors {
         armv7 {
             ndk {
                 abiFilters "armeabi-v7a", ""
@@ -33,7 +33,7 @@ android {
                 abiFilters "x86", ""
             }
         }
-    }
+    }*/
 }
 
 repositories {

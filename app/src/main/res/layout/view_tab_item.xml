@@ -1,6 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainRelativeLayout"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/footer_view_height"
+    android:layout_height="@dimen/tab_item_view_height"
     >
 
     <Button
